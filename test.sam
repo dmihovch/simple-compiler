@@ -1,0 +1,12 @@
+int x = 5;
+int y = 42;
+int z = x + y;
+int w = z + (x - y);
+return(y);
+
+//other valid tokens
+
+% / * ==
+
+
+
