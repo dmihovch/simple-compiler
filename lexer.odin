@@ -1,45 +1,56 @@
 package main 
 
 import "core:fmt"
-//import "core:strings"
 
-LexError:: enum {
+Lexer_Error_Kind:: enum {
 	ILLEGAL_IDENT,
 	//and more
 }
 
-State :: enum {
-	Start,
-	Integer,
-	Identifier,
-	Keyword,
-	Invalid,
+Lexer_Error :: struct {
+	kind: Lexer_Error_Kind,
+	row: int,
+	col: int,
 }
 
 Lexer :: struct {
 	source: string,
 	pos: int,
 	len: int,
-	line: int,
-	column: int,
-}
+	row: int,
+	col: int,
 
+	toks: [dynamic]Token,
+	errs: [dynamic]Lexer_Error,
+}
 
 init_lexer :: proc(source: string, len: int) -> Lexer {
 	return Lexer{
 		source = source,
 		pos = 0,
 		len = len,
-		line = 1,
-		column = 1,
+		row = 1,
+		col= 1,
 	}
 }
 
-parse_error :: proc(e: LexError) -> string {
-	switch e {
-		case .ILLEGAL_IDENT: return "Illegal Indentifier"
-	}
-	return "unknown error" 
+//maybe an error, need to check if the append can fail
+emit_token :: proc(lex: ^Lexer){
+	//TODO
+}
+
+advance :: proc(lex: ^Lexer){
+	lex.pos += 1
+}
+
+scan_number :: proc(lex: ^Lexer){
+	//declare start
+	//pos will be end
+	//TODO
+}
+
+scan_identifier :: proc(lex: ^Lexer){
+	//TODO
 }
 
 peek :: proc(lex: ^Lexer) -> (u8, bool) {
@@ -49,36 +60,52 @@ peek :: proc(lex: ^Lexer) -> (u8, bool) {
 	return lex.source[lex.pos+1], true
 }
 
-//this is currently garbage
-process_next_token :: proc(lex: ^Lexer) -> (Token, LexError){
-	//this is da state machine
-	lex.pos+=1
-	return {kind = .Plus, value = "+"}, nil
+is_digit :: proc(c: u8) -> bool {
+	return c >= '0' && c <= '9'
 }
 
-parse_tokens :: proc(lex: ^Lexer) -> ([dynamic]Token, LexError) {
-	toks: [dynamic]Token
-	
+is_alpha :: proc(c: u8) -> bool {
+	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+}
+
+is_ident_start :: proc(c: u8) -> bool{
+	return is_alpha(c) || c == '_'
+}
+
+is_ident_continue :: proc(c: u8) -> bool {
+	return is_ident_start(c) || is_digit(c)
+}
+
+//this is currently garbage
+lexical_analysis :: proc(lex: ^Lexer) {
 	for lex.pos < lex.len {
-		curch := lex.source[lex.pos]
-		if curch == '\n' {
-			lex.line+=1
-			lex.column=1
-			lex.pos+=1
-			continue
+		ch := lex.source[lex.pos]
+		switch {
+		case is_digit(ch): 
+		case is_alpha(ch):
+		case is_ident_start(ch):
+		case is_ident_continue(ch):
+		case ch == '(':
+		case ch == ')':
+		case ch == '+':
+		case ch == '-':
+		case ch == '/':
+		case ch == '*':
+		case ch == '%':
+		case ch == '=':
+		case ch == '\n':
+			lex.pos += 1
+			lex.col = 1
+			lex.row += 1
+		case ch == ' ':
+			lex.pos += 1
+			lex.col += 1
+		case:
+			//Lexical Error
+			lex.pos += 1
+			lex.col += 1
 		}
-		if curch == ' ' {
-			lex.column+=1
-			lex.pos+=1
-			continue
-		}
-		tok, err := process_next_token(lex)
-		if err != nil {
-			fmt.eprintln("Lexical LexError: ", parse_error(err), " on Line:", lex.line, "|Column:", lex.column)
-			return toks, err
-		}
-		append(&toks, tok)
+
 	}
 
-	return toks, nil
 }

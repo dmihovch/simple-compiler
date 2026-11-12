@@ -33,12 +33,18 @@ run :: proc() -> int {
 	defer delete(file_str)
 
 	fmt.println(file_str)
-	lexer := init_lexer(file_str, len(file_str))
-	toks, lexer_err := parse_tokens(&lexer)
-	if lexer_err != nil {
-		return 5
-	}
+
+	toks: [dynamic]Token
 	defer delete(toks)
+	lexer_errors: [dynamic]Lexer_Error
+	defer delete(lexer_errors)
+
+	lexer := init_lexer(file_str, len(file_str))
+	lexer.toks = toks
+	lexer.errs = lexer_errors
+	lexical_analysis(&lexer)
+	//report errors and exit or hand off to parser
+
 	fmt.println(toks)
 	fmt.println(len(toks))
 	
