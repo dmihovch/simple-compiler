@@ -7,14 +7,14 @@ import "core:strings"
 run :: proc() -> int {
 	num_args := len(os.args)
 	if num_args < 2 {
-		fmt.eprintln("Usage: ./simple-compiler <file_name>.sam")
+		fmt.eprintln("Usage: ./simple-compiler <file_name>.csam")
 		return 1
 	}
 
 	fmt.println(os.args)
 	
-	if !strings.has_suffix(os.args[1], ".sam") {
-		fmt.eprintln("file: ", os.args[1], " not a .sam file")
+	if !strings.has_suffix(os.args[1], ".csam") {
+		fmt.eprintln("file: ", os.args[1], " not a .csam file")
 		return 2
 	}
 

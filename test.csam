@@ -2,11 +2,14 @@ int x = 5;
 int y = 42;
 int z = x + y;
 int w = z + (x - y);
+int b = y == x; //0
+int a = 42;
+int c = a == y; //1
 return(y);
 
 //other valid tokens
 
-% / * ==
+% / *
 
 
 
