@@ -43,16 +43,11 @@ run :: proc() -> int {
 	lexer.toks = toks
 	lexer.errs = lexer_errors
 	lexical_analysis(&lexer)
-	//report errors and exit or hand off to parser
 
-	fmt.println(toks)
-	fmt.println(len(toks))
-	
-	//testing 
-	ok:bool
-	file_str ,ok = strings.replace_all(file_str, " ", "")
-	file_str , ok= strings.replace_all(file_str, "\n", "")
-	fmt.println(len(file_str))
+	print_tokens(&lexer)
+	print_lex_errors(&lexer)
+
+	//report errors and exit or hand off to parser
 
 	return 0
 }
